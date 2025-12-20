@@ -15,9 +15,11 @@ export default async function sendEmail(req, res){
             user: process.env.NEXT_PUBLIC_USEMAIL,
             pass: process.env.NEXT_PUBLIC_USEPASS  // USED APP PASSWORD
         },
-        tls: {
-            rejectUnauthorized: false
-        }
+        // requireTLS: true,
+        connectionTimeout: 10000
+        // tls: {
+        //     rejectUnauthorized: false
+        // }
     })
 
     try {
