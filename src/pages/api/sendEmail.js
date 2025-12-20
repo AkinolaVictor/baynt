@@ -3,14 +3,19 @@ const nodemailer = require('nodemailer');
 export default async function sendEmail(req, res){
     const {userEmail, subject, html} = req.body
     
-    console.log({userEmail, subject, em: process.env.NEXT_PUBLIC_USEMAIL});
+    // console.log({userEmail, subject, em: process.env.NEXT_PUBLIC_USEMAIL});
     // return res.send({successful: true})
     
     let transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
+        service: 'gmail',
+        port: 587,
+        secure: false,
+        auth: { 
             user: process.env.NEXT_PUBLIC_USEMAIL,
             pass: process.env.NEXT_PUBLIC_USEPASS  // USED APP PASSWORD
+        },
+        tls: {
+            rejectUnauthorized: false
         }
     })
 
