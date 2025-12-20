@@ -10,7 +10,7 @@ export default async function sendEmail(req, res){
         service: 'Gmail',
         auth: {
             user: process.env.NEXT_PUBLIC_USEMAIL,
-            pass: process.env.NEXT_PUBLIC_USEPASS
+            pass: process.env.NEXT_PUBLIC_USEPASS  // USED APP PASSWORD
         }
     })
 
