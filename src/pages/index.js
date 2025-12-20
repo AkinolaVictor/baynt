@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+// console.log(process.env.NEXT_PUBLIC_OAUTH2_EMAIL_REFRESH_TOKEN);
+// console.log(process.env.REACT_APP_OH);
+
 
 function Comp1(){
   return (

@@ -1,6 +1,38 @@
-import React from 'react'
+import axios from 'axios'
+import React, { useState } from 'react'
 
 function Freetrials({style}) {
+    const [email, setEmail] = useState("")
+
+    async function sendMsg(){
+      if(!email.split('').includes('.') || !email.split('').includes('@') || email.length<5) {
+        alert("invalid email address, please ensure to use a valid email address")
+        return
+      }
+
+      const html = `
+          <div>
+              <h4>Hello, Welcome to Baynt</h4>
+              <p>This is a demo project i created for showcase.</p>
+              <p>There really isn't any real app to be given out</p>
+          </div>
+      `
+      const data = {
+          userEmail: `${"akinolavictor50@gmail.com"}`,
+          subject: 'Get Your Free Trial With Baynt',
+          html
+      }
+      
+
+      await axios.post("/api/sendEmail", {...data
+      }).then((result)=>{
+        console.log({sd: result.data});
+        console.log("successful");
+      }).catch((e)=>{
+        console.log("error encountered", e);
+      })
+    }
+
     return (
 
         <div className={`bk2:mt-[220px] mt-[70px] bk2:flex block justify-between mx-auto bk2:mx-0 ${style}`}>
@@ -18,12 +50,13 @@ function Freetrials({style}) {
               <input 
                 type="email" 
                 name="subscribe" 
-                value="" 
+                value={email}
+                onChange={(e)=>setEmail(e.target.value)}
                 placeholder="name@email.com"
                 className="bg-white w-[300px] h-[40px] rounded-full px-[15px] mx-auto bk2:mx-0"
                 style={{border: "1px solid rgba(41,41,41,0.7)"}}
               />
-              <div className="bg-red-500 cursor-pointer flex justify-center items-center w-[200px] h-[40px] bk2:ml-[15px] mx-auto bk2:mx-0 mt-[15px] bk2:mt-0 rounded-full">
+              <div onClick={sendMsg} className="bg-red-500 cursor-pointer flex justify-center items-center w-[200px] h-[40px] bk2:ml-[15px] mx-auto bk2:mx-0 mt-[15px] bk2:mt-0 rounded-full">
                 <p className="text-white text-[14px]">Get instant access</p>
               </div>
           </div>
