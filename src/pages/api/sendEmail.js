@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 export default async function sendEmail(req, res){
     const {userEmail, subject, html} = req.body
     
-    // console.log({userEmail, em: process.env.NEXT_PUBLIC_USEMAIL, ps: process.env.NEXT_PUBLIC_USEPASS});
+    console.log({userEmail, subject, em: process.env.NEXT_PUBLIC_USEMAIL});
     // return res.send({successful: true})
     
     let transporter = nodemailer.createTransport({

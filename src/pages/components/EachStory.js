@@ -3,7 +3,7 @@ import React from 'react'
 function EachStory({icon, title, detail}) {
     return (
         <div 
-            className='w-[370px] h-[280px] p-[7px] rounded-[20px] bg-white flex justify-center items-center flex-col m-[10px] bk2:m-[50px]'
+            className='w-full max-w-[350px] h-[280px] p-[7px] rounded-[20px] bg-white flex justify-center items-center flex-col m-[10px] bk2:m-[50px]'
             style={{boxShadow: "rgba(0,0,0,0.35) 0px 5px 15px"}}
         >
             <div 

@@ -3,8 +3,11 @@ import React, { useState } from 'react'
 
 function Freetrials({style}) {
     const [email, setEmail] = useState("")
+    const [loading, setLoading] = useState(false)
 
     async function sendMsg(){
+      if(loading) return
+
       if(!email.split('').includes('.') || !email.split('').includes('@') || email.length<5) {
         alert("invalid email address, please ensure to use a valid email address")
         return
@@ -12,25 +15,32 @@ function Freetrials({style}) {
 
       const html = `
           <div>
-              <h4>Hello, Welcome to Baynt</h4>
-              <p>This is a demo project i created for showcase.</p>
-              <p>There really isn't any real app to be given out</p>
+            <h4>Hello, Welcome to Baynt</h4>
+            <p>This is a demo project i created for showcase.</p>
+            <p>Thank you for opting in for a trial</p>
+            <p>There really isn't any app to be given out...</p>
           </div>
       `
       const data = {
-          userEmail: `${"akinolavictor50@gmail.com"}`,
+          userEmail: `${email}`,
           subject: 'Get Your Free Trial With Baynt',
           html
       }
       
-
-      await axios.post("/api/sendEmail", {...data
-      }).then((result)=>{
-        console.log({sd: result.data});
-        console.log("successful");
+      setLoading(true)
+      await axios.post("/api/sendEmail", {...data}).then((result)=>{
+        // console.log({sd: });
+        const {successful} = result.data
+        if(successful){
+          console.log("successful");
+          setEmail("")
+          alert("A message has been sent to your email address, please check it out")
+        }
       }).catch((e)=>{
         console.log("error encountered", e);
+        alert("Failed, something went wrong")
       })
+      setLoading(false)
     }
 
     return (
@@ -57,7 +67,11 @@ function Freetrials({style}) {
                 style={{border: "1px solid rgba(41,41,41,0.7)"}}
               />
               <div onClick={sendMsg} className="bg-red-500 cursor-pointer flex justify-center items-center w-[200px] h-[40px] bk2:ml-[15px] mx-auto bk2:mx-0 mt-[15px] bk2:mt-0 rounded-full">
-                <p className="text-white text-[14px]">Get instant access</p>
+                {
+                  loading?
+                  <p className="text-white text-[14px]">Loading...</p>:
+                  <p className="text-white text-[14px]">Get instant access</p>
+                }
               </div>
           </div>
           
