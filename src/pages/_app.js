@@ -5,17 +5,20 @@ import { Provider } from "react-redux";
 import dataStore from "../redux/store"
 import { useEffect } from "react";
 import ReactModal from "react-modal";
+import { SessionProvider } from "next-auth/react";
 
-export default function App({ Component, pageProps }) {
+export default function App({ Component, pageProps, session }) {
   useEffect(()=>{
     ReactModal.setAppElement("body")
   }, [])
 
   return (
     <Provider store={dataStore}>
-      <Header />
-      <Component {...pageProps} />
-      <Footer />
+      <SessionProvider session={session}>
+        <Header />
+        <Component {...pageProps} />
+        <Footer />
+      </SessionProvider>
       {/* <Menu_Modal /> */}
     </Provider>
   );

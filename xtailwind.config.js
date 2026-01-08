@@ -26,3 +26,5 @@ module.exports = {
     },
     plugins: [],
 }
+
+// nodemailer 6.7.3

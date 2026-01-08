@@ -3,9 +3,9 @@ import { useRouter } from 'next/navigation'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-function BlogIntro({creator, title, body, icon, num, item}) {
+function BlogIntro({name, title, content, icon, num, item}) {
     const router = useRouter()
-    const {openedPost} = useSelector(state=>state.generalSlice)
+    // const {openedPost} = useSelector(state=>state.generalSlice)
     // console.log({openedPost});
     
     const {setGeneralAlpha} = generalFunctions()
@@ -16,15 +16,15 @@ function BlogIntro({creator, title, body, icon, num, item}) {
     return (
         <div className='flex flex-wrap w-full max-w-[1200px] justify-center items-center my-[20px]'>
             <img 
-                src={`/images/${icon}.jpg`} alt="phone with baynt logo on it" 
+                src={icon} alt="phone with baynt logo on it" 
                 className="w-full h-auto max-w-[500px] mr-[15px] bk7:mr-auto my-[15px]" 
             />
 
             <div className='w-full max-w-[500px] my-[15px]'>
-                <p className='mb-[80px] text-[13px]'>{num} <sup>_______</sup> {creator}</p>
+                <p className='mb-[80px] text-[13px]'>{num} <sup>_______</sup> {name}</p>
                 <p className='text-[16px] mb-[15px]'>{title}</p>
                 <p className='text-[14px] opacity-70'>
-                    {body}
+                    {content}
                 </p>
             
                 <div 

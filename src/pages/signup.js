@@ -1,9 +1,94 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Freetrials from './components/Freetrials'
 import Menu_Modal from './components/Menu_Modal'
 import Link from 'next/link'
+import {useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth"
+import { auth } from '@/firebase'
+import { useRouter } from 'next/router'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import axios from 'axios'
+import { generalFunctions } from '@/utils/storeControllers/generalFunctions'
+
 
 function Signup() {
+    const router = useRouter();
+    const [createUser] = useCreateUserWithEmailAndPassword(auth)
+    const [errMsg, setErrMsg] = useState("")
+    const [loading, setLoading] = useState(false)
+    const {setGeneralAlpha} = generalFunctions()
+
+    const [payload, setPayload] = useState({
+        name: "",
+        email: "",
+        password: ""
+    })
+
+    const validation = ()=> {
+        if(payload.name.length<3){
+            setErrMsg("Name should be more than 2 characters")
+            return true
+        }
+
+        if(
+            payload.email.length<=5 || 
+            !payload.email.includes("@") || 
+            payload.email.includes(" ") || 
+            !payload.email.includes(".")
+        ){
+            setErrMsg("Please ensure to input a valid email address")
+            return true
+        }
+        
+        if(payload.password.length<8){
+            setErrMsg("Password should be more than 6 characters")
+            return true
+        }
+
+        return false
+    }
+
+    function handleChange(key, value){
+        setErrMsg("")
+        setPayload((prev)=>{
+            const curr = {...prev}
+            curr[key] = value
+            return curr
+        })
+    }
+
+    const submit = async () => {
+        if(loading) return
+        if(validation()) return
+
+        setErrMsg("")
+        setLoading(true)
+        const {email, password, name} = payload
+
+        // await createUserWithEmailAndPassword(auth, payload.email, payload.password).then((res)=>{
+        await axios.post("/api/user/createAccount", {email, password, name}).then((result)=>{
+            const {message, successful, userID, userData} = result.data
+            if(successful){
+                console.log(userID);
+                // console.log("account created");
+
+                const userD = JSON.stringify(userData)
+                localStorage.setItem("userData", userD)
+                localStorage.setItem("userID", userID)
+
+                setGeneralAlpha("userData", {...userData})
+                setGeneralAlpha("userID", userID)
+
+                router.push("/blog")
+            } else {
+                setErrMsg(message)
+            }
+        }).catch((err)=>{
+            // console.log("signup error");
+            // console.log(err.code);
+        })
+        setLoading(false)
+    }
+    
     return (
         <div className='w- py-[0px]'>
             <div className='w-full flex justify-center items-center bg-white flex-wrap'>
@@ -13,25 +98,40 @@ function Signup() {
 
                     <div className='w-full'>
                         <input 
+                            type="name" 
+                            name="name" 
+                            placeholder="Name"
+                            value={payload.name}
+                            onChange={(e)=>{handleChange("name", e.target.value)}}
+                            className="w-full text-[12px] bg-[#eee] h-[45px] rounded-full px-[15px] mb-[20px]"
+                        />
+                        <input 
                             type="email" 
                             name="email" 
-                            value="" 
-                            placeholder="Email Address"
+                            placeholder="Email"
+                            value={payload.email}
+                            onChange={(e)=>{handleChange("email", e.target.value)}}
                             className="w-full text-[12px] bg-[#eee] h-[45px] rounded-full px-[15px] mb-[20px]"
                         />
                         <input 
                             type="password" 
                             name="password" 
-                            value="" 
                             placeholder="Password"
+                            value={payload.password}
+                            onChange={(e)=>{handleChange("password", e.target.value)}}
                             className="w-full text-[12px] bg-[#eee] h-[45px] rounded-full px-[15px] mb-[20px]"
                         />
-                        <button className='w-[100%] mt-[15px] cursor-pointer p-[12px] bg-red-500 rounded-full'>
-                            <p className='text-[12px] text-white'>Login</p>
+                        <p className="text-center text-[12px] text-[rosybrown]">{errMsg}</p>
+                        <button onClick={submit} className='w-[100%] mt-[15px] cursor-pointer p-[12px] bg-red-500 rounded-full'>
+                            {
+                                loading?
+                                <p className='text-[12px] text-white'>Loading...</p>:
+                                <p className='text-[12px] text-white'>Sign Up</p>
+                            }
                         </button>
                     </div>
 
-                    <div className='w-full flex justify-between items-center my-[40px]'>
+                    {/* <div className='w-full flex justify-between items-center my-[40px]'>
                         <div className='w-[45%] h-[1px] bg-[rosybrown] opacity-30'/>
                         <p className='mx-[20px] opacity-50 text-[12px]'>or</p>
                         <div className='w-[45%] h-[1px] bg-[rosybrown] opacity-30'/>
@@ -53,7 +153,7 @@ function Signup() {
                         />
 
                         <p className='text-[14px]'>Continue with Twitter</p>
-                    </div>
+                    </div> */}
                     
                     <p className='text-[12px] my-[40px]'>Already have an account? <Link href={"/signin"} className='text-[red] cursor-pointer'>Sign In</Link></p>
                 </div>

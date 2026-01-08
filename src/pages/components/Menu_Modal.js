@@ -2,14 +2,18 @@ import { navs } from '@/utils/public_exports'
 import { generalFunctions } from '@/utils/storeControllers/generalFunctions'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/router'
 import React from 'react'
 import ReactModal from 'react-modal'
 import { useSelector } from 'react-redux'
 
 function Menu_Modal() {
     const storedData = useSelector(state=>state.generalSlice)
+    const {userID, userData} = useSelector(state=>state.generalSlice)
+    const userActive = userID && userData
     const {setGeneralAlpha} = generalFunctions()
     const path = usePathname()
+    const router = useRouter();
 
     function modalToggle(){
       setGeneralAlpha("modal", (val)=>{
@@ -59,13 +63,21 @@ function Menu_Modal() {
                     }
 
                     <div className='flex justify-between items-center w-[90%] rounded-full '>
-                        <Link href={"/signin"} onClick={modalToggle} className='w-auto h-auto px-[25px] py-[6px] rounded-full cursor-pointer text-[12px] text-center' style={{background: "rgb(200, 179, 179)"}}>
-                            Sign In
-                        </Link>
+                        {
+                            userActive?
+                            <div onClick={()=>{logOut({router, setGeneralAlpha}); modalToggle()}} className='w-auto h-auto px-[25px] ml-auto mr-auto mt-[10px] py-[6px] rounded-full cursor-pointer text-[12px] text-center' style={{background: "rgb(200, 179, 179)"}}>
+                                Sign Out
+                            </div>:
+                            <>
+                                <Link href={"/signin"} onClick={modalToggle} className='w-auto h-auto px-[25px] py-[6px] rounded-full cursor-pointer text-[12px] text-center' style={{background: "rgb(200, 179, 179)"}}>
+                                    Sign In
+                                </Link>
 
-                        <Link href={"/signup"} onClick={modalToggle} className='w-auto h-auto px-[25px] py-[6px] rounded-full cursor-pointer text-[12px] text-center' style={{background: "rgb(200, 179, 179)"}}>
-                            Sign Up
-                        </Link>
+                                <Link href={"/signup"} onClick={modalToggle} className='w-auto h-auto px-[25px] py-[6px] rounded-full cursor-pointer text-[12px] text-center' style={{background: "rgb(200, 179, 179)"}}>
+                                    Sign Up
+                                </Link>
+                            </>
+                        }
                     </div>
                 </div>
             </ReactModal>

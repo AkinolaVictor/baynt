@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import BlogIntro from './components/BlogIntro'
 import { blog_posts } from '@/utils/public_exports'
 import Customer_Report from './components/Customer_Report'
@@ -8,10 +8,17 @@ import Menu_Modal from './components/Menu_Modal'
 import CreatePost from './components/CreatePost'
 import { generalFunctions } from '@/utils/storeControllers/generalFunctions'
 import { useSelector } from 'react-redux'
+import axios from 'axios'
 
 function Blog() {
     // const {createPost} = useSelector(state=>state.generalSlice)
     const {setGeneralAlpha} = generalFunctions()
+    const {userID, userData, posts} = useSelector(state=>state.generalSlice)
+    const userActive = userID && userData
+    // const [posts, setPosts] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [where, setWhere] = useState("all")
+
     
     function openCreate(){
         // console.log("working");
@@ -20,6 +27,56 @@ function Blog() {
           return !val
         })
     }
+
+    async function getBlogPosts(){
+        if(loading) return
+        
+        setLoading(true)
+        
+        await axios.get("/api/blog/getBlogPosts", {}).then((resp)=>{
+            const {successful, data} = resp.data
+            
+            if(!successful) return
+
+            // console.log(data);
+            setGeneralAlpha("posts", data)
+        }).catch((err)=>{
+            console.log("Error when fetching data");
+            console.log(err);
+        })
+
+        setLoading(false)
+    }
+
+
+    function items(){
+        if(where==="all"){
+            return [...posts, ...blog_posts]
+        } else {
+            const userPosts = userData?.posts||[]
+            let output = []
+            
+            for(let j=userPosts.length-1; j>=0; j--){
+                for(let i=0; i<posts.length; i++){
+                    const thisPostID = posts[i].postID
+                    if(thisPostID == userPosts[j]) output = [...output, posts[i]]
+                    // if(userPosts.includes(thisPostID)){
+                    //     output = [...output, posts[i]]
+                    // }
+                }
+            }
+            
+            return output
+        }
+    }
+
+
+    useEffect(()=>{
+        // console.log("Called fro posts");
+        // return
+        if(posts.length) return
+        getBlogPosts()
+    }, [])
 
     return (
         <div className={`relative w-full py-[20px] px-[0px] flex justify-center flex-col items-center m-0`}>
@@ -97,47 +154,59 @@ function Blog() {
                     </div>
                 </div>
             </div>
+            
+            {
+                loading?
+                <div className='w-[100%] py-[70px] flex justify-center items-center'>
+                    <p className='font-[600] text-[rosybrown]'>Loading Posts...</p>
+                </div>:
+                <div className='bg-white py-[50px] px-[20px] w-full flex flex-col justify-center items-center'>
+                    {
+                        userActive?
+                        <div className='w-full bk:px-[20px] px-[10px] flex justify-between items-center'>
+                            <div className='flex'>
+                                <div onClick={()=>{setWhere("all")}} className='max-w-[100px] w-auto px-[20px] cursor-pointer'>
+                                    <p className='text-[12px] font-[600] opacity-70'>All Posts</p>
+                                    <div className={`w-full h-[4px] mt-[4px] bg-black rounded-full opacity-${where=="all"?"70":"0"}`}/>
+                                </div>
+                                <div onClick={()=>{setWhere("mine")}} className='max-w-[100px] w-auto px-[20px] cursor-pointer'>
+                                    <p className='text-[12px] font-[600] opacity-70'>My Posts</p>
+                                    <div className={`w-full h-[4px] mt-[4px] bg-black rounded-full opacity-${where=="mine"?"70":"0"}`}/>
+                                </div>
+                            </div>
 
-            <div className='bg-white py-[50px] px-[20px] w-full flex flex-col justify-center items-center'>
-                <div className='w-full bk:px-[20px] px-[10px] flex justify-between items-center'>
-                    <div className='flex'>
-                        <div className='max-w-[100px] w-auto px-[20px] cursor-pointer'>
-                            <p className='text-[12px] font-[600] opacity-70'>All Posts</p>
-                            <div className='w-full h-[4px] mt-[4px] bg-black rounded-full opacity-70'/>
-                        </div>
-                        <div className='max-w-[100px] w-auto px-[20px] cursor-pointer'>
-                            <p className='text-[12px] font-[600] opacity-70'>My Posts</p>
-                            <div className='w-full h-[4px] mt-[4px] bg-black rounded-full opacity-0'/>
-                        </div>
-                    </div>
+                            <div className='max-w-[200px] w-auto px-[20px] cursor-pointer' onClick={openCreate}>
+                                <p className='text-[12px] font-[600] text-[blue]'>Create post</p>
+                                <div className='w-full h-[4px] mt-[4px] bg-black rounded-full opacity-0'/>
+                            </div>
+                            {/* <div className='w-[30px] h-[30px] flex justify-center items-center bg-[#eee] rounded-full mt-[-20px]'>
+                                <p className='text-[20px]'>+</p>
+                            </div> */}
+                        </div>:
+                        <p className='text-left w-full text-[14px] font-[500] mb-[10px]'>Recent Posts</p>
+                    }
 
-                    <div className='max-w-[200px] w-auto px-[20px] cursor-pointer' onClick={openCreate}>
-                        <p className='text-[12px] font-[600] text-[blue]'>Create post</p>
-                        <div className='w-full h-[4px] mt-[4px] bg-black rounded-full opacity-0'/>
-                    </div>
-                    {/* <div className='w-[30px] h-[30px] flex justify-center items-center bg-[#eee] rounded-full mt-[-20px]'>
-                        <p className='text-[20px]'>+</p>
-                    </div> */}
+                    <div className='w-full h-[1px] mt-[0px] bg-black rounded-full opacity-10'/>
+
+                    {
+                        items().map((item, index)=>{
+                            const {title, name, imageUrl, content} = item
+                            return (
+                                <BlogIntro 
+                                    key={index}
+                                    num={`${index+1<10?"0":""}${index+1}`}
+                                    name={name}
+                                    title={title}
+                                    // description={description}
+                                    content={content}
+                                    icon={imageUrl || "/images/blogpost1.jpg"}
+                                    item={item}
+                                />
+                            )
+                        })
+                    }
                 </div>
-                <div className='w-full h-[1px] mt-[0px] bg-black rounded-full opacity-10'/>
-                {
-                    blog_posts.map((item, index)=>{
-                        const {title, creator, icon, body} = item
-                        return (
-                            <BlogIntro 
-                                key={index}
-                                num={`${index+1<10?"0":""}${index+1}`}
-                                creator={creator}
-                                title={title}
-                                // description={description}
-                                body={body}
-                                icon={icon}
-                                item={item}
-                            />
-                        )
-                    })
-                }
-            </div>
+            }
 
 
             <Customer_Report />

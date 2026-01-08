@@ -6,7 +6,10 @@ const initialState = {
     modal: false,
     createPost: false,
     name: "General Store",
-    openedPost: null
+    openedPost: null,
+    userID: null,
+    userData: null,
+    posts: []
 }
 
 
