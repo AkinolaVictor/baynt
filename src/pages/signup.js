@@ -16,11 +16,12 @@ function Signup() {
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
     const {setGeneralAlpha} = generalFunctions()
-
+    const [password2, setPassword2] = useState("")
     const [payload, setPayload] = useState({
         name: "",
         email: "",
-        password: ""
+        password: "",
+        password2: "",
     })
 
     const validation = ()=> {
@@ -41,6 +42,11 @@ function Signup() {
         
         if(payload.password.length<8){
             setErrMsg("Password should be more than 6 characters")
+            return true
+        }
+        
+        if(payload.password !== payload.password2){
+            setErrMsg("Password do not match")
             return true
         }
 
@@ -119,6 +125,14 @@ function Signup() {
                             placeholder="Password"
                             value={payload.password}
                             onChange={(e)=>{handleChange("password", e.target.value)}}
+                            className="w-full text-[12px] bg-[#eee] h-[45px] rounded-full px-[15px] mb-[20px]"
+                        />
+                        <input 
+                            type="password" 
+                            name="password" 
+                            placeholder="Confirm Password"
+                            value={payload.password2}
+                            onChange={(e)=>{handleChange("password2", e.target.value)}}
                             className="w-full text-[12px] bg-[#eee] h-[45px] rounded-full px-[15px] mb-[20px]"
                         />
                         <p className="text-center text-[12px] text-[rosybrown]">{errMsg}</p>

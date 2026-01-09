@@ -14,11 +14,11 @@ export default function App({ Component, pageProps, session }) {
 
   return (
     <Provider store={dataStore}>
-      <SessionProvider session={session}>
+      {/* <SessionProvider session={session}> */}
         <Header />
         <Component {...pageProps} />
         <Footer />
-      </SessionProvider>
+      {/* </SessionProvider> */}
       {/* <Menu_Modal /> */}
     </Provider>
   );

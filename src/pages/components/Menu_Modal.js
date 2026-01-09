@@ -1,3 +1,4 @@
+import { logOut } from '@/utils/dbFunction'
 import { navs } from '@/utils/public_exports'
 import { generalFunctions } from '@/utils/storeControllers/generalFunctions'
 import Link from 'next/link'
