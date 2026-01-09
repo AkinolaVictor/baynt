@@ -28,7 +28,7 @@ function Freetrials({style}) {
       }
       
       setLoading(true)
-      await axios.post("/api/sendEmail", {...data}).then((result)=>{
+      await axios.post("/api/sendEmail_2", {...data}).then((result)=>{
         // console.log({sd: });
         const {successful} = result.data
         if(successful){
@@ -38,7 +38,7 @@ function Freetrials({style}) {
         }
       }).catch((e)=>{
         console.log("error encountered", e);
-        alert("Failed, something went wrong")
+        alert("Failed to give access, some minor problem occured in the server")
       })
       setLoading(false)
     }

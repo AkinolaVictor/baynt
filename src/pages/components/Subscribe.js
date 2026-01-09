@@ -14,12 +14,12 @@ function Subscribe({style}) {
     }
     
     const html = `
-    <div>
-            <h4>Hello, Welcome to Baynt</h4>
-            <p>This is a demo project i created for showcase.</p>
-            <p>Thank you for opting to subscribe</p>
-            <p>There really isn't any app to be given out...</p>
-        </div>
+      <div>
+          <h4>Hello, Welcome to Baynt</h4>
+          <p>This is a demo project i created for showcase.</p>
+          <p>Thank you for opting to subscribe</p>
+          <p>There really isn't any app to be given out...</p>
+      </div>
     `
     const data = {
         userEmail: `${email}`,
@@ -28,7 +28,7 @@ function Subscribe({style}) {
     }
     
     setLoading(true)
-    await axios.post("/api/sendEmail", {...data}).then((result)=>{
+    await axios.post("/api/sendEmail_2", {...data}).then((result)=>{
       const {successful} = result.data
       if(successful){
         console.log("successful");

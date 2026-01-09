@@ -5,6 +5,7 @@ export default async function sendEmail(req, res){
     
     // console.log({userEmail, subject, em: process.env.NEXT_PUBLIC_USEMAIL});
     // return res.send({successful: true})
+    console.log("called email");
     
     let transporter = nodemailer.createTransport({
         // service: 'gmail',
