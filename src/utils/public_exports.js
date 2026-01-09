@@ -64,3 +64,5 @@ export const blog_posts = [
         name: "Baynt Blog"
     }
 ]
+
+export let isBlank = (str) => (!str || /^\s*$/.test(str))

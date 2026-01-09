@@ -1,10 +1,97 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Menu_Modal from './components/Menu_Modal'
 import Customer_Report from './components/Customer_Report'
 import FAQs from './components/FAQs'
 import Freetrials from './components/Freetrials'
+import axios from 'axios'
+import { isBlank } from '@/utils/public_exports'
+// import sendEmail from './api/sendEmail'
 
 function Contact() {
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [message, setMessage] = useState("")
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
+
+    async function sendMsg(){
+        if(loading) return
+
+        if(isBlank(name)){
+            setError("Please ensure your name is not empty")
+            return
+        }
+        
+        if(!email.split('').includes('.') || !email.split('').includes('@') || email.length<5 || isBlank(email)) {
+            setError("Invalid email address, please ensure to use a valid email address")
+            return
+        }
+
+        if(isBlank(message)){
+            setError("Please ensure messgae is not blank")
+            return
+        }
+
+
+        
+        setLoading(true)
+
+        await user_message()
+        await report_message({last: true})
+
+
+        async function user_message() {
+            const html_2 = `
+            <div>
+                <h4>Hello ${name}, Thank you for reaching out to us</h4>
+                <p>Your message has reached our end, and we'll do our best to respond accordingly.</p>
+            </div>
+            `
+            const sender_payload = {
+                userEmail: `${email}`,
+                subject: 'Baynt',
+                html: html_2
+            }
+            await emailSender({data: sender_payload})
+        }
+
+        async function report_message({last}) {
+            const html_1 = `
+            <div>
+                <h4>Message from ${name}</h4>
+                <p>${message}</p>
+            </div>
+            `
+            const developer_payload = {
+                userEmail: `akinolavictor50@gmail.com`,
+                subject: 'Baynt Contact Report',
+                html: html_1
+            }
+            await emailSender({data: developer_payload, last})
+        }
+
+        async function emailSender({data, last}) {
+            await axios.post("/api/sendEmail_2", {...data}).then((result)=>{
+                const {successful} = result.data
+                if(successful){
+                    console.log("successful");
+
+                    if(!last) return
+                    setName("")
+                    setMessage("")
+                    setEmail("")
+                    setError("")
+
+                    alert("Message Sent Successfully.")
+                }
+            }).catch((e)=>{
+                console.log("error encountered", e);
+                alert("Unable to send messagae")
+            })
+        }
+        setLoading(false)
+    }
+
     return (
         <div className={`relative w-full py-[20px] px-[0px] flex justify-center flex-col items-center m-0`}>
             <div className='flex flex-wrap w-full max-w-[900px] justify-center items-center mb-[30px] px-[10px]'>
@@ -61,7 +148,8 @@ function Contact() {
                             <input 
                                 type="name" 
                                 name="name" 
-                                value="" 
+                                value={name}
+                                onChange={(e)=>{setName(e.target.value); setError("")}}
                                 placeholder="Name"
                                     className="w-[45%] text-[12px] bg-[#eee] h-[40px] rounded-[10px] px-[15px]"
                                 // style={{border: "1px solid rgba(41,41,41,0.7)"}}
@@ -69,7 +157,8 @@ function Contact() {
                             <input 
                                 type="email" 
                                 name="email" 
-                                value="" 
+                                value={email}
+                                onChange={(e)=>{setEmail(e.target.value); setError("")}}
                                 placeholder="Email"
                                     className="w-[45%] text-[12px] bg-[#eee] h-[40px] rounded-[10px] px-[15px]"
                                 // style={{border: "1px solid rgba(41,41,41,0.7)"}}
@@ -77,12 +166,18 @@ function Contact() {
                         </div>
                         <textarea 
                             rows="5" cols="5" 
+                            value={message}
+                            onChange={(e)=>{setMessage(e.target.value); setError("")}}
                             className='w-full bg-[#eee] rounded-[10px] mt-[20px] p-[15px] text-[12px]'
                             placeholder='Message'
                         />
-                        
-                        <button className='w-[100%] mt-[15px] cursor-pointer p-[10px] bg-[red] rounded-[15px]'>
-                            <p className='text-[12px] text-white'>Send</p>
+                        <p className='text-[rosybrown] font-[600] text-[12px] text-center w-full mt-[10px]'>{error}</p>
+                        <button onClick={sendMsg} className='w-[100%] mt-[15px] cursor-pointer p-[10px] bg-[red] rounded-[15px]'>
+                            {
+                                loading?
+                                <p className='text-[12px] text-white'>Loading...</p>:
+                                <p className='text-[12px] text-white'>Send</p>
+                            }
                         </button>
 
                         <p className='opacity-70 text-[12px] mt-[20px]'><span className='text-[red]'>Baynt,</span> a software, accessible online with scalability and automatic updates.</p>
