@@ -68,11 +68,12 @@ function Contact() {
                 subject: 'Baynt Contact Report',
                 html: html_1
             }
+
             await emailSender({data: developer_payload, last})
         }
 
         async function emailSender({data, last}) {
-            await axios.post("/api/sendEmail_2", {...data}).then((result)=>{
+            return await axios.post("/api/sendEmail_2", {...data}).then((result)=>{
                 const {successful} = result.data
                 if(successful){
                     console.log("successful");
@@ -85,9 +86,11 @@ function Contact() {
 
                     alert("Message Sent Successfully.")
                 }
+                return {done: true}
             }).catch((e)=>{
                 console.log("error encountered", e);
-                alert("Unable to send messagae")
+                if(last) alert("Unable to send messagae")
+                return {done: false}
             })
         }
         setLoading(false)
@@ -176,7 +179,7 @@ function Contact() {
                         <button onClick={sendMsg} className='w-[100%] mt-[15px] cursor-pointer p-[10px] bg-[red] rounded-[15px]'>
                             {
                                 loading?
-                                <p className='text-[12px] text-white'>Loading...</p>:
+                                <p className='text-[12px] text-white'>Sending...</p>:
                                 <p className='text-[12px] text-white'>Send</p>
                             }
                         </button>
