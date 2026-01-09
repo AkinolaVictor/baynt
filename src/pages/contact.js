@@ -60,6 +60,7 @@ function Contact() {
             <div>
                 <h4>Message from ${name}</h4>
                 <p>${message}</p>
+                <p>This is the user email: ${email}</p>
             </div>
             `
             const developer_payload = {
